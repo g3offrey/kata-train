@@ -1,4 +1,8 @@
-const { reserve, getPercentageOfSeatsOccupied } = require("./reservation");
+const {
+  reserve,
+  getPercentageOfSeatsOccupiedInTrain,
+  getPercentageOfSeatsOccupiedInCoach
+} = require("./reservation");
 
 describe("reservation", () => {
   describe("reserve", () => {
@@ -64,7 +68,7 @@ describe("reservation", () => {
         });
       });
 
-      describe("when the train have above 70% of reservations", () => {
+      describe("when the train have more than 70% of reservations", () => {
         it("shouldn't reserve seats", () => {
           const numberOfPlaces = 1;
           const train = {
@@ -89,10 +93,37 @@ describe("reservation", () => {
           expect(reservedSeats).toEqual([]);
         });
       });
+
+      describe("when a coach is filled with more than 70% of reservations", () => {
+        it("should reserve seats in another coach", () => {
+          const numberOfPlaces = 1;
+          const train = {
+            coachs: [
+              {
+                id: "A",
+                seats: [
+                  { id: "1A", reservation: {} },
+                  { id: "2A", reservation: {} },
+                  { id: "3A", reservation: {} },
+                  { id: "4A", reservation: null }
+                ]
+              },
+              {
+                id: "B",
+                seats: [{ id: "1B", reservation: null }]
+              }
+            ]
+          };
+
+          const reservedSeats = reserve(train, numberOfPlaces);
+
+          expect(reservedSeats).toEqual(["1B"]);
+        });
+      });
     });
   });
 
-  describe("getPercentageOfSeatsOccupied", () => {
+  describe("getPercentageOfSeatsOccupiedInTrain", () => {
     describe("with halt of place occupied", () => {
       it("should return 50", () => {
         const train = {
@@ -107,7 +138,7 @@ describe("reservation", () => {
           ]
         };
 
-        const percentage = getPercentageOfSeatsOccupied(train);
+        const percentage = getPercentageOfSeatsOccupiedInTrain(train);
 
         expect(percentage).toBe(50);
       });
@@ -132,7 +163,45 @@ describe("reservation", () => {
           ]
         };
 
-        const percentage = getPercentageOfSeatsOccupied(train);
+        const percentage = getPercentageOfSeatsOccupiedInTrain(train);
+
+        expect(percentage).toBe(75);
+      });
+    });
+  });
+
+  describe("getPercentageOfSeatsOccupiedInCoach", () => {
+    describe("with half of place occupied", () => {
+      it("should return 50", () => {
+        const coach = {
+          id: "A",
+          seats: [
+            { id: "1A", reservation: {} },
+            { id: "2A", reservation: {} },
+            { id: "3A", reservation: null },
+            { id: "4A", reservation: null }
+          ]
+        };
+
+        const percentage = getPercentageOfSeatsOccupiedInCoach(coach);
+
+        expect(percentage).toBe(50);
+      });
+    });
+
+    describe("with 3/4 of place occupied", () => {
+      it("should return 75", () => {
+        const coach = {
+          id: "A",
+          seats: [
+            { id: "1A", reservation: {} },
+            { id: "2A", reservation: {} },
+            { id: "3A", reservation: {} },
+            { id: "4A", reservation: null }
+          ]
+        };
+
+        const percentage = getPercentageOfSeatsOccupiedInCoach(coach);
 
         expect(percentage).toBe(75);
       });
