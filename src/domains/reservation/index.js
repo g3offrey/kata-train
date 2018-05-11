@@ -11,25 +11,25 @@ function getTrainSeats(train) {
 }
 
 /**
- * Return the percentage of seats occupied
+ * Return the percentage of seats reserved
  * @param {Object[]} seats
- * @returns {number} percentage of seats occupied
+ * @returns {number} percentage of seats reserved
  */
-function getPercentageOfSeatsOccupied(seats) {
+function getPercentageOfSeatsReserved(seats = []) {
   let numberOfSeats = 0;
-  let numberOfSeatsOccupied = 0;
+  let numberOfSeatsReserved = 0;
 
   const isReserved = seat => seat.reservation;
 
   seats.forEach(seat => {
     if (isReserved(seat)) {
-      numberOfSeatsOccupied += 1;
+      numberOfSeatsReserved += 1;
     }
 
     numberOfSeats += 1;
   });
 
-  return numberOfSeatsOccupied / numberOfSeats * 100;
+  return numberOfSeatsReserved / numberOfSeats * 100;
 }
 
 /**
@@ -37,10 +37,10 @@ function getPercentageOfSeatsOccupied(seats) {
  * @param train
  * @returns {number} percentage of seats reserved
  */
-function getPercentageOfSeatsOccupiedInTrain(train) {
+function getPercentageOfSeatsReservedInTrain(train) {
   const seats = getTrainSeats(train);
 
-  return getPercentageOfSeatsOccupied(seats);
+  return getPercentageOfSeatsReserved(seats);
 }
 
 /**
@@ -48,10 +48,8 @@ function getPercentageOfSeatsOccupiedInTrain(train) {
  * @param coach
  * @returns {number} percentage of seats reserved
  */
-function getPercentageOfSeatsOccupiedInCoach(coach) {
-  const seats = coach.seats || [];
-
-  return getPercentageOfSeatsOccupied(seats);
+function getPercentageOfSeatsReservedInCoach(coach) {
+  return getPercentageOfSeatsReserved(coach.seats);
 }
 
 /**
@@ -65,10 +63,10 @@ function reserve(train, numberOfReservation) {
   const isReserved = seat => seat.reservation;
   const shouldReserveSeat = () => reservations.length < numberOfReservation;
   const canReserveSeatInTrain =
-    getPercentageOfSeatsOccupiedInTrain(train) <
+    getPercentageOfSeatsReservedInTrain(train) <
     TRAIN_RESERVATION_PERCENTAGE_THRESHOLD;
   const canReserveSeatInCoach = coach =>
-    getPercentageOfSeatsOccupiedInCoach(coach) <=
+    getPercentageOfSeatsReservedInCoach(coach) <=
     COACH_RESERVATION_PERCENTAGE_THRESHOLD;
 
   if (!canReserveSeatInTrain) {
@@ -89,6 +87,6 @@ function reserve(train, numberOfReservation) {
 
 module.exports = {
   reserve,
-  getPercentageOfSeatsOccupiedInTrain,
-  getPercentageOfSeatsOccupiedInCoach
+  getPercentageOfSeatsReservedInTrain,
+  getPercentageOfSeatsReservedInCoach
 };

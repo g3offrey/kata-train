@@ -1,7 +1,7 @@
 const {
   reserve,
-  getPercentageOfSeatsOccupiedInTrain,
-  getPercentageOfSeatsOccupiedInCoach
+  getPercentageOfSeatsReservedInTrain,
+  getPercentageOfSeatsReservedInCoach
 } = require("./.");
 
 describe("reservation", () => {
@@ -123,8 +123,8 @@ describe("reservation", () => {
     });
   });
 
-  describe("getPercentageOfSeatsOccupiedInTrain", () => {
-    describe("with halt of place occupied", () => {
+  describe("getPercentageOfSeatsReservedInTrain", () => {
+    describe("with halt of place reserved", () => {
       it("should return 50", () => {
         const train = {
           coachs: [
@@ -138,13 +138,13 @@ describe("reservation", () => {
           ]
         };
 
-        const percentage = getPercentageOfSeatsOccupiedInTrain(train);
+        const percentage = getPercentageOfSeatsReservedInTrain(train);
 
         expect(percentage).toBe(50);
       });
     });
 
-    describe("with 3/4 of place occupied", () => {
+    describe("with 3/4 of place reserved", () => {
       it("should return 75", () => {
         const train = {
           coachs: [
@@ -163,15 +163,15 @@ describe("reservation", () => {
           ]
         };
 
-        const percentage = getPercentageOfSeatsOccupiedInTrain(train);
+        const percentage = getPercentageOfSeatsReservedInTrain(train);
 
         expect(percentage).toBe(75);
       });
     });
   });
 
-  describe("getPercentageOfSeatsOccupiedInCoach", () => {
-    describe("with half of place occupied", () => {
+  describe("getPercentageOfSeatsReservedInCoach", () => {
+    describe("with half of place reserved", () => {
       it("should return 50", () => {
         const coach = {
           id: "A",
@@ -183,13 +183,13 @@ describe("reservation", () => {
           ]
         };
 
-        const percentage = getPercentageOfSeatsOccupiedInCoach(coach);
+        const percentage = getPercentageOfSeatsReservedInCoach(coach);
 
         expect(percentage).toBe(50);
       });
     });
 
-    describe("with 3/4 of place occupied", () => {
+    describe("with 3/4 of place reserved", () => {
       it("should return 75", () => {
         const coach = {
           id: "A",
@@ -201,7 +201,7 @@ describe("reservation", () => {
           ]
         };
 
-        const percentage = getPercentageOfSeatsOccupiedInCoach(coach);
+        const percentage = getPercentageOfSeatsReservedInCoach(coach);
 
         expect(percentage).toBe(75);
       });
