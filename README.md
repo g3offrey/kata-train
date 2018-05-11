@@ -1,3 +1,5 @@
+[![Build Status](https://semaphoreci.com/api/v1/g3offrey/kata-train/branches/master/badge.svg)](https://semaphoreci.com/g3offrey/kata-train)
+
 # Kata: Train Reservation
 
 ([from Emily Bache's kata](https://github.com/emilybache/KataTrainReservation))
