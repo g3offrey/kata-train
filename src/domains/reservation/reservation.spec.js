@@ -2,7 +2,7 @@ const {
   reserve,
   getPercentageOfSeatsOccupiedInTrain,
   getPercentageOfSeatsOccupiedInCoach
-} = require("./reservation");
+} = require("./.");
 
 describe("reservation", () => {
   describe("reserve", () => {
