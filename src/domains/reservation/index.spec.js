@@ -110,7 +110,12 @@ describe("reservation", () => {
               },
               {
                 id: "B",
-                seats: [{ id: "1B", reservation: null }]
+                seats: [
+                  { id: "1B", reservation: null },
+                  { id: "2B", reservation: null },
+                  { id: "3B", reservation: null },
+                  { id: "4B", reservation: null }
+                ]
               }
             ]
           };
@@ -120,6 +125,44 @@ describe("reservation", () => {
           expect(reservedSeats).toEqual(["1B"]);
         });
       });
+
+      describe("when a coach will be filled with more than 70% after the reservations", () => {
+        it("should reserve seats in another coach", () => {
+          const numberOfPlaces = 2
+          const train = {
+            coachs: [
+              {
+                id: "A",
+                seats: [
+                  { id: "1A", reservation: {} },
+                  { id: "2A", reservation: {} },
+                  { id: "3A", reservation: {} },
+                  { id: "4A", reservation: {} },
+                  { id: "5A", reservation: {} },
+                  { id: "6A", reservation: {} },
+                  { id: "7A", reservation: null },
+                  { id: "8A", reservation: null },
+                  { id: "9A", reservation: null },
+                  { id: "10A", reservation: null }
+                ]
+              },
+              {
+                id: "B",
+                seats: [
+                  { id: "1B", reservation: null },
+                  { id: "2B", reservation: null },
+                  { id: "3B", reservation: null },
+                  { id: "4B", reservation: null }
+                ]
+              }
+            ]
+          };
+
+          const reservedSeats = reserve(train, numberOfPlaces);
+
+          expect(reservedSeats).toEqual(["1B", "2B"]);
+        })
+      })
     });
   });
 
