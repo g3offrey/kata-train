@@ -163,6 +163,38 @@ describe("reservation", () => {
           expect(reservedSeats).toEqual(["1B", "2B"]);
         })
       })
+
+      describe("when there is no coach filled with less than 70% of reservations", () => {
+        it("should reserve the first available places", () => {
+          const numberOfPlaces = 2
+          const train = {
+            coachs: [
+              {
+                id: "A",
+                seats: [
+                  { id: "1A", reservation: {} },
+                  { id: "2A", reservation: {} },
+                  { id: "3A", reservation: null },
+                  { id: "4A", reservation: null },
+                ]
+              },
+              {
+                id: "B",
+                seats: [
+                  { id: "1B", reservation: {} },
+                  { id: "2B", reservation: {} },
+                  { id: "3B", reservation: null },
+                  { id: "4B", reservation: null }
+                ]
+              }
+            ]
+          };
+
+          const reservedSeats = reserve(train, numberOfPlaces)
+
+          expect(reservedSeats).toEqual(["3A", "4A"])
+        })
+      })
     });
   });
 

@@ -55,36 +55,47 @@ function getPercentageOfSeatsReservedInCoach(coach, numberOfReservation) {
 }
 
 /**
+ * Make XX reservation in the coachs
+ * @param {Object[]} coachs
+ * @param {number} numberOfReservation
+ * @returns {Array} ID of the seats reserved
+ */
+function reserveSeatsInCoachs(coachs, numberOfReservation) {
+  let reservations = [];
+  const isNotReserved = seat => !seat.reservation;
+  const hasNoMoreSeatsToReserve = () => reservations.length >= numberOfReservation;
+  coachs.some(coach => {
+    const availableSeats = coach.seats.filter(isNotReserved).map(seat => seat.id)
+    reservations = availableSeats.slice(0, numberOfReservation)
+
+    return hasNoMoreSeatsToReserve()
+  })
+
+  return reservations
+}
+
+/**
  * Make XX reservation for the train
- * @param train
- * @param numberOfReservation
+ * @param {Object} train
+ * @param {number} numberOfReservation
  * @returns {Array} ID of the seats reserved
  */
 function reserve(train, numberOfReservation) {
-  const reservations = [];
-  const isReserved = seat => seat.reservation;
-  const shouldReserveSeat = () => reservations.length < numberOfReservation;
   const canReserveSeatInTrain =
     getPercentageOfSeatsReservedInTrain(train) <
     TRAIN_RESERVATION_PERCENTAGE_THRESHOLD;
-  const canReserveSeatInCoach = coach =>
+  const coachDontOverflowReservationLimit = coach =>
     getPercentageOfSeatsReservedInCoach(coach, numberOfReservation) <=
     COACH_RESERVATION_PERCENTAGE_THRESHOLD;
 
   if (!canReserveSeatInTrain) {
-    return reservations;
+    return [];
   }
 
-  train.coachs.forEach(
-    coach =>
-      canReserveSeatInCoach(coach) &&
-      coach.seats.forEach(
-        seat =>
-          shouldReserveSeat() && !isReserved(seat) && reservations.push(seat.id)
-      )
-  );
+  const coachUnderLimit = train.coachs.filter(coachDontOverflowReservationLimit)
+  const availableCoachs = coachUnderLimit.length ? coachUnderLimit : train.coachs
 
-  return reservations;
+  return reserveSeatsInCoachs(availableCoachs, numberOfReservation)
 }
 
 module.exports = {
