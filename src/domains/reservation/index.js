@@ -1,3 +1,5 @@
+const { isSeatNotReserved, isSeatReserved } = require("../seat");
+
 const TRAIN_RESERVATION_PERCENTAGE_THRESHOLD = 70;
 const COACH_RESERVATION_PERCENTAGE_THRESHOLD = 70;
 
@@ -20,10 +22,8 @@ function getPercentageOfSeatsReserved(seats = [], numberOfReservation = 0) {
   let numberOfSeats = 0;
   let numberOfSeatsReserved = numberOfReservation;
 
-  const isReserved = seat => seat.reservation;
-
   seats.forEach(seat => {
-    if (isReserved(seat)) {
+    if (isSeatReserved(seat)) {
       numberOfSeatsReserved += 1;
     }
 
@@ -55,47 +55,99 @@ function getPercentageOfSeatsReservedInCoach(coach, numberOfReservation) {
 }
 
 /**
- * Make XX reservation in the coachs
+ * Get the available seats in coach
+ * @param {Object} coach
+ * @returns {Object[]} available seats
+ */
+function getAvailableSeatInCoach(coach) {
+  return coach.seats.filter(isSeatNotReserved);
+}
+
+/**
+ * Reserve XX seats from the seats list
+ * @param {Object[]} seats
+ * @param {number} numberOfReservation
+ * @returns {Array} ID of the seats reserved
+ */
+function reserveSeats(seats, numberOfReservation) {
+  const reservations = [];
+  const hasNoMoreSeatsToReserve = () =>
+    reservations.length >= numberOfReservation;
+
+  seats.map(seat => seat.id).some(seatId => {
+    reservations.push(seatId);
+
+    return hasNoMoreSeatsToReserve();
+  });
+
+  return reservations;
+}
+
+/**
+ * Do XX reservation in the same coach if possible
  * @param {Object[]} coachs
  * @param {number} numberOfReservation
  * @returns {Array} ID of the seats reserved
  */
-function reserveSeatsInCoachs(coachs, numberOfReservation) {
-  let reservations = [];
-  const isNotReserved = seat => !seat.reservation;
-  const hasNoMoreSeatsToReserve = () => reservations.length >= numberOfReservation;
-  coachs.some(coach => {
-    const availableSeats = coach.seats.filter(isNotReserved).map(seat => seat.id)
-    reservations = availableSeats.slice(0, numberOfReservation)
+function reserveSeatsInSameCoach(coachs, numberOfReservation) {
+  const hasEnoughtSeats = seats => seats.length >= numberOfReservation;
 
-    return hasNoMoreSeatsToReserve()
-  })
+  const seatsAvailableToReserve = coachs
+    .map(getAvailableSeatInCoach)
+    .find(hasEnoughtSeats);
 
-  return reservations
+  return seatsAvailableToReserve
+    ? reserveSeats(seatsAvailableToReserve, numberOfReservation)
+    : [];
 }
 
 /**
- * Make XX reservation for the train
+ * Do XX reservations in the train randomly
+ * @param {Object} train
+ * @param {number} numberOfReservation
+ * @returns {Array} ID of the seats reserved
+ */
+function reserveSeatsRandomly(train, numberOfReservation) {
+  const availableSeats = getTrainSeats(train).filter(isSeatNotReserved);
+
+  return reserveSeats(availableSeats, numberOfReservation);
+}
+
+/**
+ * Do XX reservation for the train
  * @param {Object} train
  * @param {number} numberOfReservation
  * @returns {Array} ID of the seats reserved
  */
 function reserve(train, numberOfReservation) {
-  const canReserveSeatInTrain =
+  const canReserveInTrain =
     getPercentageOfSeatsReservedInTrain(train) <
     TRAIN_RESERVATION_PERCENTAGE_THRESHOLD;
   const coachDontOverflowReservationLimit = coach =>
     getPercentageOfSeatsReservedInCoach(coach, numberOfReservation) <=
     COACH_RESERVATION_PERCENTAGE_THRESHOLD;
 
-  if (!canReserveSeatInTrain) {
+  if (!canReserveInTrain) {
     return [];
   }
 
-  const coachUnderLimit = train.coachs.filter(coachDontOverflowReservationLimit)
-  const availableCoachs = coachUnderLimit.length ? coachUnderLimit : train.coachs
+  const coachUnderReservationLimit = train.coachs.filter(
+    coachDontOverflowReservationLimit
+  );
+  const availableCoachs = coachUnderReservationLimit.length
+    ? coachUnderReservationLimit
+    : train.coachs;
 
-  return reserveSeatsInCoachs(availableCoachs, numberOfReservation)
+  const sameCoachReservations = reserveSeatsInSameCoach(
+    availableCoachs,
+    numberOfReservation
+  );
+
+  if (sameCoachReservations.length === numberOfReservation) {
+    return sameCoachReservations;
+  }
+
+  return reserveSeatsRandomly(train, numberOfReservation);
 }
 
 module.exports = {

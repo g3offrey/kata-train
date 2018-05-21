@@ -26,7 +26,7 @@ describe("reservation", () => {
 
     describe("with available seats", () => {
       describe("when we reserve one seats", () => {
-        it("should return an reserved seats", () => {
+        it("should return a reserved seats", () => {
           const numberOfPlaces = 1;
           const train = {
             coachs: [
@@ -128,7 +128,7 @@ describe("reservation", () => {
 
       describe("when a coach will be filled with more than 70% after the reservations", () => {
         it("should reserve seats in another coach", () => {
-          const numberOfPlaces = 2
+          const numberOfPlaces = 2;
           const train = {
             coachs: [
               {
@@ -161,12 +161,12 @@ describe("reservation", () => {
           const reservedSeats = reserve(train, numberOfPlaces);
 
           expect(reservedSeats).toEqual(["1B", "2B"]);
-        })
-      })
+        });
+      });
 
       describe("when there is no coach filled with less than 70% of reservations", () => {
         it("should reserve the first available places", () => {
-          const numberOfPlaces = 2
+          const numberOfPlaces = 2;
           const train = {
             coachs: [
               {
@@ -175,7 +175,7 @@ describe("reservation", () => {
                   { id: "1A", reservation: {} },
                   { id: "2A", reservation: {} },
                   { id: "3A", reservation: null },
-                  { id: "4A", reservation: null },
+                  { id: "4A", reservation: null }
                 ]
               },
               {
@@ -190,11 +190,41 @@ describe("reservation", () => {
             ]
           };
 
-          const reservedSeats = reserve(train, numberOfPlaces)
+          const reservedSeats = reserve(train, numberOfPlaces);
 
-          expect(reservedSeats).toEqual(["3A", "4A"])
-        })
-      })
+          expect(reservedSeats).toEqual(["3A", "4A"]);
+        });
+
+        describe("when there is not enought free seats in one coach", () => {
+          it.only("should split reservations across coachs", () => {
+            const numberOfPlaces = 2;
+            const train = {
+              coachs: [
+                {
+                  id: "A",
+                  seats: [
+                    { id: "1A", reservation: {} },
+                    { id: "2A", reservation: {} },
+                    { id: "3A", reservation: null }
+                  ]
+                },
+                {
+                  id: "B",
+                  seats: [
+                    { id: "1B", reservation: {} },
+                    { id: "2B", reservation: {} },
+                    { id: "3B", reservation: null }
+                  ]
+                }
+              ]
+            };
+
+            const reservedSeats = reserve(train, numberOfPlaces);
+
+            expect(reservedSeats).toEqual(["3A", "3B"]);
+          });
+        });
+      });
     });
   });
 
