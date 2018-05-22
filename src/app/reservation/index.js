@@ -5,7 +5,7 @@ const {
 const {
   getReservationReference
 } = require("../../infrastructure/http/providers/reservation-reference");
-const { reserve: reserveTickets } = require("../../domain/reservation/");
+const { reserve: getReservedSeats } = require("../../domain/reservation/");
 
 function buildTrainFromTrainStrucure(trainId, trainStructure) {
   const { seats } = trainStructure;
@@ -38,7 +38,7 @@ async function reserve(trainId, numberOfReservation) {
   const trainStructure = await getTrainStructure(trainId);
   const train = buildTrainFromTrainStrucure(trainId, trainStructure);
 
-  const reservedSeatsIds = reserveTickets(train, numberOfReservation); // TODO rename here
+  const reservedSeatsIds = getReservedSeats(train, numberOfReservation);
 
   const reservationReference = await getReservationReference();
   await reserveSeats(trainId, reservationReference, reservedSeatsIds);
