@@ -25,7 +25,7 @@ describe("reservation", () => {
     });
 
     describe("with available seats", () => {
-      describe("when we reserve one seats", () => {
+      describe("when we reservation one seats", () => {
         it("should return a reserved seats", () => {
           const numberOfPlaces = 1;
           const train = {
@@ -46,7 +46,7 @@ describe("reservation", () => {
         });
       });
 
-      describe("when we reserve multiple seats", () => {
+      describe("when we reservation multiple seats", () => {
         it("should return multiple reserved seats", () => {
           const numberOfPlaces = 2;
           const train = {
@@ -69,7 +69,7 @@ describe("reservation", () => {
       });
 
       describe("when the train have more than 70% of reservations", () => {
-        it("shouldn't reserve seats", () => {
+        it("shouldn't reservation seats", () => {
           const numberOfPlaces = 1;
           const train = {
             coachs: [
@@ -95,7 +95,7 @@ describe("reservation", () => {
       });
 
       describe("when a coach is filled with more than 70% of reservations", () => {
-        it("should reserve seats in another coach", () => {
+        it("should reservation seats in another coach", () => {
           const numberOfPlaces = 1;
           const train = {
             coachs: [
@@ -127,7 +127,7 @@ describe("reservation", () => {
       });
 
       describe("when a coach will be filled with more than 70% after the reservations", () => {
-        it("should reserve seats in another coach", () => {
+        it("should reservation seats in another coach", () => {
           const numberOfPlaces = 2;
           const train = {
             coachs: [
@@ -165,7 +165,7 @@ describe("reservation", () => {
       });
 
       describe("when there is no coach filled with less than 70% of reservations", () => {
-        it("should reserve the first available places", () => {
+        it("should reservation the first available places", () => {
           const numberOfPlaces = 2;
           const train = {
             coachs: [

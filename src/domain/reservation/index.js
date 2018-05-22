@@ -1,4 +1,4 @@
-const { isSeatNotReserved, isSeatReserved } = require("../seat");
+const { isSeatNotReserved, isSeatReserved } = require("../seat/");
 
 const TRAIN_RESERVATION_PERCENTAGE_THRESHOLD = 70;
 const COACH_RESERVATION_PERCENTAGE_THRESHOLD = 70;
