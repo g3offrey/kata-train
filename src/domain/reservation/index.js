@@ -36,12 +36,13 @@ function getPercentageOfSeatsReserved(seats = [], numberOfReservation = 0) {
 /**
  * Get the percentage of seats which has been reserved in the whole train
  * @param {Object} train
+ * @param {number} numberOfReservation
  * @returns {number} percentage of seats reserved
  */
-function getPercentageOfSeatsReservedInTrain(train) {
+function getPercentageOfSeatsReservedInTrain(train, numberOfReservation) {
   const seats = getTrainSeats(train);
 
-  return getPercentageOfSeatsReserved(seats);
+  return getPercentageOfSeatsReserved(seats, numberOfReservation);
 }
 
 /**
@@ -121,7 +122,7 @@ function reserveSeatsRandomly(train, numberOfReservation) {
  */
 function reserve(train, numberOfReservation) {
   const canReserveInTrain =
-    getPercentageOfSeatsReservedInTrain(train) <
+    getPercentageOfSeatsReservedInTrain(train, numberOfReservation) <
     TRAIN_RESERVATION_PERCENTAGE_THRESHOLD;
   const coachDontOverflowReservationLimit = coach =>
     getPercentageOfSeatsReservedInCoach(coach, numberOfReservation) <=
