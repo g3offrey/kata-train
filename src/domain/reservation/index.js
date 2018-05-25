@@ -3,21 +3,10 @@ const { isSeatNotReserved, isSeatReserved } = require("../seat/");
 const TRAIN_RESERVATION_PERCENTAGE_THRESHOLD = 70;
 const COACH_RESERVATION_PERCENTAGE_THRESHOLD = 70;
 
-/**
- * Return an array of all the train seats
- * @param {Object} train
- * @returns {Object[]} All seats of train
- */
 function getTrainSeats(train) {
   return train.coachs.reduce((seats, coach) => [...seats, ...coach.seats], []);
 }
 
-/**
- * Return the percentage of seats reserved
- * @param {Object[]} seats
- * @param {number} numberOfReservation
- * @returns {number} percentage of seats reserved
- */
 function getPercentageOfSeatsReserved(seats = [], numberOfReservation = 0) {
   let numberOfSeats = 0;
   let numberOfSeatsReserved = numberOfReservation;
@@ -55,22 +44,11 @@ function getPercentageOfSeatsReservedInCoach(coach, numberOfReservation) {
   return getPercentageOfSeatsReserved(coach.seats, numberOfReservation);
 }
 
-/**
- * Get the available seats in coach
- * @param {Object} coach
- * @returns {Object[]} available seats
- */
 function getAvailableSeatInCoach(coach) {
   return coach.seats.filter(isSeatNotReserved);
 }
 
-/**
- * Reserve XX seats from the seats list
- * @param {Object[]} seats
- * @param {number} numberOfReservation
- * @returns {Array} ID of the seats reserved
- */
-function reserveSeats(seats, numberOfReservation) {
+function getSeatsIdAvailable(seats, numberOfReservation) {
   const reservations = [];
   const hasNoMoreSeatsToReserve = () =>
     reservations.length >= numberOfReservation;
@@ -84,13 +62,7 @@ function reserveSeats(seats, numberOfReservation) {
   return reservations;
 }
 
-/**
- * Do XX reservation in the same coach if possible
- * @param {Object[]} coachs
- * @param {number} numberOfReservation
- * @returns {Array} ID of the seats reserved
- */
-function reserveSeatsInSameCoach(coachs, numberOfReservation) {
+function getSeatsIdAvailableInSameCoach(coachs, numberOfReservation) {
   const hasEnoughtSeats = seats => seats.length >= numberOfReservation;
 
   const seatsAvailableToReserve = coachs
@@ -98,29 +70,23 @@ function reserveSeatsInSameCoach(coachs, numberOfReservation) {
     .find(hasEnoughtSeats);
 
   return seatsAvailableToReserve
-    ? reserveSeats(seatsAvailableToReserve, numberOfReservation)
+    ? getSeatsIdAvailable(seatsAvailableToReserve, numberOfReservation)
     : [];
 }
 
-/**
- * Do XX reservations in the train randomly
- * @param {Object} train
- * @param {number} numberOfReservation
- * @returns {Array} ID of the seats reserved
- */
-function reserveSeatsRandomly(train, numberOfReservation) {
+function getSeatsIdAvailableRandomly(train, numberOfReservation) {
   const availableSeats = getTrainSeats(train).filter(isSeatNotReserved);
 
-  return reserveSeats(availableSeats, numberOfReservation);
+  return getSeatsIdAvailable(availableSeats, numberOfReservation);
 }
 
 /**
- * Do XX reservation for the train
+ * Get available seats for reservation
  * @param {Object} train
  * @param {number} numberOfReservation
- * @returns {Array} ID of the seats reserved
+ * @returns {Array} ID of the available seats
  */
-function reserve(train, numberOfReservation) {
+function getSeatsIdAvailableForReservation(train, numberOfReservation) {
   const canReserveInTrain =
     getPercentageOfSeatsReservedInTrain(train, numberOfReservation) <
     TRAIN_RESERVATION_PERCENTAGE_THRESHOLD;
@@ -139,7 +105,7 @@ function reserve(train, numberOfReservation) {
     ? coachUnderReservationLimit
     : train.coachs;
 
-  const sameCoachReservations = reserveSeatsInSameCoach(
+  const sameCoachReservations = getSeatsIdAvailableInSameCoach(
     availableCoachs,
     numberOfReservation
   );
@@ -148,11 +114,11 @@ function reserve(train, numberOfReservation) {
     return sameCoachReservations;
   }
 
-  return reserveSeatsRandomly(train, numberOfReservation);
+  return getSeatsIdAvailableRandomly(train, numberOfReservation);
 }
 
 module.exports = {
-  reserve,
+  getSeatsIdAvailableForReservation,
   getPercentageOfSeatsReservedInTrain,
   getPercentageOfSeatsReservedInCoach
 };
