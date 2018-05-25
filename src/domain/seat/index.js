@@ -1,10 +1,4 @@
-function isSeatNotReserved(seat) {
-  return !seat.reservation;
-}
-
-function isSeatReserved(seat) {
-  return !!seat.reservation;
-}
+const { isSeatNotReserved, isSeatReserved } = require("./reservation");
 
 module.exports = {
   isSeatNotReserved,

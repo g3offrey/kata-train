@@ -1,11 +1,7 @@
-const {
-  getSeatsIdAvailableForReservation,
-  getPercentageOfSeatsReservedInTrain,
-  getPercentageOfSeatsReservedInCoach
-} = require("./.");
+const { getSeatsIdAvailableForReservation } = require("./seats-finder");
 
-describe("reservation", () => {
-  describe("getReservedSeatsId", () => {
+describe("reservation seats-finder", () => {
+  describe("getSeatsIdAvailableForReservation", () => {
     describe("without available seats", () => {
       it("should return an empty array", () => {
         const numberOfResservation = 1;
@@ -93,6 +89,38 @@ describe("reservation", () => {
               {
                 id: "B",
                 seats: [{ id: "1B", reservation: null }]
+              }
+            ]
+          };
+
+          const reservedSeats = getSeatsIdAvailableForReservation(
+            train,
+            numberOfResservation
+          );
+
+          expect(reservedSeats).toEqual([]);
+        });
+      });
+
+      describe("when the train will be filled with more than 70% after the reservations", () => {
+        it("shouldn't return seats", () => {
+          const numberOfResservation = 2;
+          const train = {
+            coachs: [
+              {
+                id: "A",
+                seats: [
+                  { id: "1A", reservation: {} },
+                  { id: "2A", reservation: {} },
+                  { id: "3A", reservation: {} },
+                  { id: "4A", reservation: {} },
+                  { id: "5A", reservation: {} },
+                  { id: "6A", reservation: {} },
+                  { id: "7A", reservation: null },
+                  { id: "8A", reservation: null },
+                  { id: "9A", reservation: null },
+                  { id: "10A", reservation: null }
+                ]
               }
             ]
           };
@@ -266,91 +294,6 @@ describe("reservation", () => {
             expect(reservedSeats).toEqual(["2A", "2B"]);
           });
         });
-      });
-    });
-  });
-
-  describe("getPercentageOfSeatsReservedInTrain", () => {
-    describe("with halt of place reserved", () => {
-      it("should return 50", () => {
-        const train = {
-          coachs: [
-            {
-              id: "A",
-              seats: [
-                { id: "1A", reservation: {} },
-                { id: "2A", reservation: null }
-              ]
-            }
-          ]
-        };
-
-        const percentage = getPercentageOfSeatsReservedInTrain(train);
-
-        expect(percentage).toBe(50);
-      });
-    });
-
-    describe("with 3/4 of place reserved", () => {
-      it("should return 75", () => {
-        const train = {
-          coachs: [
-            {
-              id: "A",
-              seats: [
-                { id: "1A", reservation: {} },
-                { id: "2A", reservation: {} },
-                { id: "3A", reservation: {} }
-              ]
-            },
-            {
-              id: "B",
-              seats: [{ id: "1B", reservation: null }]
-            }
-          ]
-        };
-
-        const percentage = getPercentageOfSeatsReservedInTrain(train);
-
-        expect(percentage).toBe(75);
-      });
-    });
-  });
-
-  describe("getPercentageOfSeatsReservedInCoach", () => {
-    describe("with half of place reserved", () => {
-      it("should return 50", () => {
-        const coach = {
-          id: "A",
-          seats: [
-            { id: "1A", reservation: {} },
-            { id: "2A", reservation: {} },
-            { id: "3A", reservation: null },
-            { id: "4A", reservation: null }
-          ]
-        };
-
-        const percentage = getPercentageOfSeatsReservedInCoach(coach);
-
-        expect(percentage).toBe(50);
-      });
-    });
-
-    describe("with 3/4 of place reserved", () => {
-      it("should return 75", () => {
-        const coach = {
-          id: "A",
-          seats: [
-            { id: "1A", reservation: {} },
-            { id: "2A", reservation: {} },
-            { id: "3A", reservation: {} },
-            { id: "4A", reservation: null }
-          ]
-        };
-
-        const percentage = getPercentageOfSeatsReservedInCoach(coach);
-
-        expect(percentage).toBe(75);
       });
     });
   });

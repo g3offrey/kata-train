@@ -1,6 +1,6 @@
 const { isSeatReserved, isSeatNotReserved } = require("./");
 
-describe("seat", () => {
+describe("seat reservation", () => {
   describe("isSeatReserved", () => {
     it("should return true when seat.reservation is a truethy object", () => {
       const seat = { reservation: {} };
